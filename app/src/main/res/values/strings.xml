@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">Alpaca Trader Pro</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_logs">Logs</string>
+    <string name="nav_settings">Settings</string>
+    
+    <!-- Onboarding -->
+    <string name="disclaimer_title">Risk Disclaimer</string>
+    <string name="disclaimer_message">Trading involves substantial risk. This app is for personal use only. You may lose all your invested capital. Use at your own risk.</string>
+    <string name="disclaimer_accept">I Understand</string>
+    <string name="enter_api_key">Enter Alpaca API Key</string>
+    <string name="enter_api_secret">Enter Alpaca API Secret</string>
+    <string name="api_key_hint">API Key</string>
+    <string name="api_secret_hint">API Secret</string>
+    <string name="save_credentials">Save Credentials</string>
+    
+    <!-- Home Screen -->
+    <string name="current_symbol">Symbol</string>
+    <string name="current_price">Current Price</string>
+    <string name="buy_all_2x">Buy All (2x)</string>
+    <string name="sell_all">Sell All</string>
+    <string name="pull_to_refresh">Pull to refresh</string>
+    <string name="todays_high">Today\'s High</string>
+    <string name="todays_low">Today\'s Low</string>
+    <string name="profit_loss">P/L: %s</string>
+    <string name="refreshing">Refreshing…</string>
+    
+    <!-- Trade Confirmations -->
+    <string name="confirm_buy">Confirm Buy</string>
+    <string name="confirm_sell">Confirm Sell</string>
+    <string name="confirm_buy_message">Buy %s shares of %s at 2x leverage?</string>
+    <string name="confirm_sell_message">Sell all %s shares of %s?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Notifications -->
+    <string name="buy_window_notification">Buy Window Active</string>
+    <string name="sell_window_notification">Sell Window Active</string>
+    <string name="notification_channel_name">Trade Windows</string>
+    <string name="notification_channel_description">Notifications for buy and sell time windows</string>
+    
+    <!-- Logs Screen -->
+    <string name="export_csv">Export CSV</string>
+    <string name="search_logs">Search logs…</string>
+    <string name="filter_by_date">Filter by date</string>
+    <string name="no_logs">No trading logs yet</string>
+    <string name="high_price">High: $%s at %s</string>
+    <string name="low_price">Low: $%s at %s</string>
+    <string name="difference">Diff: $%s (%s%%)</string>
+    
+    <!-- Settings Screen -->
+    <string name="api_credentials">API Credentials</string>
+    <string name="time_windows">Time Windows</string>
+    <string name="manual_windows">Manual Windows</string>
+    <string name="buy_window_start">Buy Window Start</string>
+    <string name="buy_window_end">Buy Window End</string>
+    <string name="sell_window_start">Sell Window Start</string>
+    <string name="sell_window_end">Sell Window End</string>
+    <string name="suggest_windows">Suggest Windows</string>
+    <string name="suggested_buy_window">Suggested Buy: %s</string>
+    <string name="suggested_sell_window">Suggested Sell: %s</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="settings_saved">Settings saved successfully!</string>
+    
+    <!-- Errors -->
+    <string name="error_invalid_credentials">Invalid API credentials</string>
+    <string name="error_insufficient_funds">Insufficient funds</string>
+    <string name="error_network">Network error. Please try again.</string>
+    <string name="error_trade_failed">Trade failed: %s</string>
+    <string name="error_websocket_connection">Failed to connect to live data</string>
+    
+    <!-- Success Messages -->
+    <string name="trade_success">Trade executed successfully!</string>
+    <string name="celebration_profit">Profit! 🎉</string>
+    <string name="big_win">Big Win! 🚀</string>
+    
+    <!-- Loading -->
+    <string name="loading">Loading…</string>
+    <string name="connecting">Connecting…</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Primary Colors -->
+    <color name="deep_blue">#0A1929</color>
+    <color name="primary_blue">#1E3A5F</color>
+    <color name="accent_blue">#2E5A8A</color>
+    <color name="light_blue">#4A7BA7</color>
+    
+    <!-- Green Colors (Profits) -->
+    <color name="dark_green">#0D3B2E</color>
+    <color name="primary_green">#1A6B4F</color>
+    <color name="accent_green">#27A573</color>
+    <color name="light_green">#4ECDC4</color>
+    
+    <!-- Red Colors (Losses) -->
+    <color name="dark_red">#4A0E0E</color>
+    <color name="primary_red">#8B1E1E</color>
+    <color name="accent_red">#D32F2F</color>
+    <color name="light_red">#EF5350</color>
+    
+    <!-- Neutral Colors -->
+    <color name="background_dark">#0A1929</color>
+    <color name="surface_dark">#132F4C</color>
+    <color name="surface_variant">#1E3A5F</color>
+    <color name="on_surface">#E7EBF0</color>
+    <color name="on_surface_variant">#B2BAC2</color>
+    
+    <!-- Chart Colors -->
+    <color name="chart_line">#4ECDC4</color>
+    <color name="chart_high">#27A573</color>
+    <color name="chart_low">#D32F2F</color>
+    <color name="chart_window_buy">#1A6B4F40</color>
+    <color name="chart_window_sell">#8B1E1E40</color>
+</resources>
