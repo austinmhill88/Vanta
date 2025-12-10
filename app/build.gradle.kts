@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
     id("kotlin-kapt")
 }
 
@@ -87,11 +86,6 @@ dependencies {
     
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
-    implementation("com.google.firebase:firebase-messaging-ktx")
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
     
     // Lottie Animations
     implementation("com.airbnb.android:lottie-compose:6.5.0")
