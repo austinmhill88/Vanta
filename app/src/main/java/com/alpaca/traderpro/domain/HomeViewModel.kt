@@ -29,11 +29,20 @@ data class HomeUiState(
     val showSellConfirmation: Boolean = false,
     val tradeSuccess: Boolean = false,
     val showCelebration: Boolean = false,
-    val celebrationType: CelebrationType = CelebrationType.NONE
+    val celebrationType: CelebrationType = CelebrationType.NONE,
+    // Auto-Mode
+    val autoModeEnabled: Boolean = false,
+    val currentSignal: com.alpaca.traderpro.data.model.AutoTradeSignal? = null,
+    val liveTrade: com.alpaca.traderpro.data.model.LiveTrade? = null,
+    val signalCountdown: Int = 0,
+    val showDailySummary: Boolean = false,
+    val dailyProfitLossPercent: Double = 0.0,
+    val winRate: Int = 0,
+    val totalAutoTrades: Int = 0
 )
 
 enum class CelebrationType {
-    NONE, PROFIT, BIG_WIN
+    NONE, PROFIT, BIG_WIN, DAILY_SUMMARY, AUTO_MODE_ON
 }
 
 class HomeViewModel(
