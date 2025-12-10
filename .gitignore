@@ -51,9 +51,7 @@ render.experimental.xml
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
-# Note: The placeholder google-services.json in app/ is tracked for build purposes
-# If you add your real Firebase config, create google-services.json.local instead
-google-services.json.local
+google-services.json
 
 # Freeline
 freeline.py
