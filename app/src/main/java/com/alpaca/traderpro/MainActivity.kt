@@ -152,7 +152,12 @@ fun AppNavigation(
                     onConfirmSell = viewModel::executeSell,
                     onDismissBuyConfirmation = viewModel::hideBuyConfirmation,
                     onDismissSellConfirmation = viewModel::hideSellConfirmation,
-                    onDismissCelebration = viewModel::dismissCelebration
+                    onDismissCelebration = viewModel::dismissCelebration,
+                    onToggleAdvancedTrading = viewModel::toggleAdvancedTrading,
+                    onCustomQuantityChange = viewModel::updateCustomQuantity,
+                    onOrderTypeChange = viewModel::updateOrderType,
+                    onLimitPriceChange = viewModel::updateLimitPrice,
+                    onStopPriceChange = viewModel::updateStopPrice
                 )
             }
             

@@ -107,4 +107,53 @@ class AlpacaRepository(
             }
         )
     }
+    
+    suspend fun buyCustom(
+        symbol: String,
+        quantity: Int,
+        orderType: String,
+        limitPrice: Double? = null,
+        stopPrice: Double? = null
+    ): Result<Order> {
+        if (quantity <= 0) {
+            return Result.failure(Exception("Quantity must be greater than 0"))
+        }
+        
+        val orderRequest = OrderRequest(
+            symbol = symbol,
+            qty = quantity.toString(),
+            side = "buy",
+            type = orderType.lowercase(),
+            timeInForce = if (orderType == "market") "day" else "gtc",
+            limitPrice = limitPrice?.toString(),
+            stopPrice = stopPrice?.toString()
+        )
+        
+        return createOrder(orderRequest)
+    }
+    
+    suspend fun sellCustom(
+        symbol: String,
+        quantity: Int,
+        orderType: String,
+        limitPrice: Double? = null,
+        stopPrice: Double? = null
+    ): Result<Order> {
+        if (quantity <= 0) {
+            return Result.failure(Exception("Quantity must be greater than 0"))
+        }
+        
+        val orderRequest = OrderRequest(
+            symbol = symbol,
+            qty = quantity.toString(),
+            side = "sell",
+            type = orderType.lowercase(),
+            timeInForce = if (orderType == "market") "day" else "gtc",
+            limitPrice = limitPrice?.toString(),
+            stopPrice = stopPrice?.toString()
+        )
+        
+        return createOrder(orderRequest)
+    }
+    }
 }

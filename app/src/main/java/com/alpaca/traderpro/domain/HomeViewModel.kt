@@ -37,6 +37,12 @@ data class HomeUiState(
     val dayProfitLoss: Double = 0.0,
     val dayProfitLossPercent: Double = 0.0,
     val positions: List<com.alpaca.traderpro.data.model.Position> = emptyList(),
+    // Trading Options
+    val showAdvancedTrading: Boolean = false,
+    val customQuantity: String = "",
+    val orderType: OrderType = OrderType.MARKET,
+    val limitPrice: String = "",
+    val stopPrice: String = "",
     // Auto-Mode
     val autoModeEnabled: Boolean = false,
     val currentSignal: com.alpaca.traderpro.data.model.AutoTradeSignal? = null,
@@ -47,6 +53,10 @@ data class HomeUiState(
     val winRate: Int = 0,
     val totalAutoTrades: Int = 0
 )
+
+enum class OrderType {
+    MARKET, LIMIT, STOP, STOP_LIMIT
+}
 
 enum class CelebrationType {
     NONE, PROFIT, BIG_WIN, DAILY_SUMMARY, AUTO_MODE_ON
@@ -72,6 +82,26 @@ class HomeViewModel(
     fun updateSymbol(symbol: String) {
         _uiState.update { it.copy(symbol = symbol.uppercase()) }
         reconnectWebSocket()
+    }
+    
+    fun toggleAdvancedTrading() {
+        _uiState.update { it.copy(showAdvancedTrading = !it.showAdvancedTrading) }
+    }
+    
+    fun updateCustomQuantity(quantity: String) {
+        _uiState.update { it.copy(customQuantity = quantity) }
+    }
+    
+    fun updateOrderType(orderType: OrderType) {
+        _uiState.update { it.copy(orderType = orderType) }
+    }
+    
+    fun updateLimitPrice(price: String) {
+        _uiState.update { it.copy(limitPrice = price) }
+    }
+    
+    fun updateStopPrice(price: String) {
+        _uiState.update { it.copy(stopPrice = price) }
     }
     
     fun refresh() {
@@ -215,11 +245,30 @@ class HomeViewModel(
             _uiState.update { it.copy(isLoading = true) }
             
             val currentState = _uiState.value
-            alpacaRepository.buyWithLeverage(
-                currentState.symbol,
-                currentState.buyingPower,
-                currentState.currentPrice
-            ).fold(
+            
+            // Check if using advanced trading with custom quantity
+            val result = if (currentState.showAdvancedTrading && currentState.customQuantity.isNotBlank()) {
+                val quantity = currentState.customQuantity.toIntOrNull() ?: 0
+                val limitPrice = currentState.limitPrice.toDoubleOrNull()
+                val stopPrice = currentState.stopPrice.toDoubleOrNull()
+                
+                alpacaRepository.buyCustom(
+                    currentState.symbol,
+                    quantity,
+                    currentState.orderType.name,
+                    limitPrice,
+                    stopPrice
+                )
+            } else {
+                // Default: Buy All with 2x leverage
+                alpacaRepository.buyWithLeverage(
+                    currentState.symbol,
+                    currentState.buyingPower,
+                    currentState.currentPrice
+                )
+            }
+            
+            result.fold(
                 onSuccess = {
                     _uiState.update { 
                         it.copy(
@@ -249,12 +298,45 @@ class HomeViewModel(
             
             val currentState = _uiState.value
             
+            // Check if using advanced trading with custom quantity
+            val result = if (currentState.showAdvancedTrading && currentState.customQuantity.isNotBlank()) {
+                val quantity = currentState.customQuantity.toIntOrNull() ?: 0
+                val limitPrice = currentState.limitPrice.toDoubleOrNull()
+                val stopPrice = currentState.stopPrice.toDoubleOrNull()
+                
+                // Calculate P/L for partial sale
+                alpacaRepository.getPosition(currentState.symbol).fold(
+                    onSuccess = { position ->
+                        alpacaRepository.sellCustom(
+                            currentState.symbol,
+                            quantity,
+                            currentState.orderType.name,
+                            limitPrice,
+                            stopPrice
+                        )
+                    },
+                    onFailure = { exception ->
+                        Result.failure(exception)
+                    }
+                )
+            } else {
+                // Default: Sell All
+                alpacaRepository.getPosition(currentState.symbol).fold(
+                    onSuccess = { position ->
+                        alpacaRepository.sellAll(currentState.symbol)
+                    },
+                    onFailure = { exception ->
+                        Result.failure(exception)
+                    }
+                )
+            }
+            
             // Get position to calculate P&L
             alpacaRepository.getPosition(currentState.symbol).fold(
                 onSuccess = { position ->
                     val unrealizedPl = position.unrealizedPl.toDoubleOrNull() ?: 0.0
                     
-                    alpacaRepository.sellAll(currentState.symbol).fold(
+                    result.fold(
                         onSuccess = {
                             // Save daily log
                             if (currentState.todayHighTime != null && currentState.todayLowTime != null) {
