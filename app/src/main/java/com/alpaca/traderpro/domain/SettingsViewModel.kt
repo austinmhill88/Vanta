@@ -21,7 +21,14 @@ data class SettingsUiState(
     val notificationsEnabled: Boolean = true,
     val isLoading: Boolean = false,
     val saveSuccess: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    // Auto-Mode Settings
+    val autoModeEnabled: Boolean = false,
+    val sellByTime: String = "14:30",
+    val targetPercent: Float = 0.32f,
+    val stopPercent: Float = 0.25f,
+    val useVWAPFilter: Boolean = true,
+    val showAutoModeConfirmation: Boolean = false
 )
 
 class SettingsViewModel(
@@ -41,11 +48,16 @@ class SettingsViewModel(
             it.copy(
                 apiKey = preferencesManager.getApiKey() ?: "",
                 apiSecret = preferencesManager.getApiSecret() ?: "",
-                buyWindowStart = preferencesManager.getBuyWindowStart() ?: "",
-                buyWindowEnd = preferencesManager.getBuyWindowEnd() ?: "",
+                buyWindowStart = preferencesManager.getBuyWindowStart() ?: "12:45",
+                buyWindowEnd = preferencesManager.getBuyWindowEnd() ?: "13:45",
                 sellWindowStart = preferencesManager.getSellWindowStart() ?: "",
                 sellWindowEnd = preferencesManager.getSellWindowEnd() ?: "",
-                notificationsEnabled = preferencesManager.areNotificationsEnabled()
+                notificationsEnabled = preferencesManager.areNotificationsEnabled(),
+                autoModeEnabled = preferencesManager.isAutoModeEnabled(),
+                sellByTime = preferencesManager.getSellByTime(),
+                targetPercent = preferencesManager.getTargetPercent(),
+                stopPercent = preferencesManager.getStopPercent(),
+                useVWAPFilter = preferencesManager.useVWAPFilter()
             )
         }
     }
@@ -76,6 +88,49 @@ class SettingsViewModel(
     
     fun updateNotificationsEnabled(enabled: Boolean) {
         _uiState.update { it.copy(notificationsEnabled = enabled) }
+    }
+    
+    fun updateAutoModeEnabled(enabled: Boolean) {
+        if (enabled && !preferencesManager.isAutoModeConfirmed()) {
+            _uiState.update { it.copy(showAutoModeConfirmation = true) }
+        } else {
+            _uiState.update { it.copy(autoModeEnabled = enabled) }
+        }
+    }
+    
+    fun confirmAutoMode() {
+        preferencesManager.saveAutoModeConfirmed(true)
+        _uiState.update { 
+            it.copy(
+                autoModeEnabled = true,
+                showAutoModeConfirmation = false
+            )
+        }
+    }
+    
+    fun cancelAutoMode() {
+        _uiState.update { 
+            it.copy(
+                autoModeEnabled = false,
+                showAutoModeConfirmation = false
+            )
+        }
+    }
+    
+    fun updateSellByTime(time: String) {
+        _uiState.update { it.copy(sellByTime = time) }
+    }
+    
+    fun updateTargetPercent(percent: Float) {
+        _uiState.update { it.copy(targetPercent = percent) }
+    }
+    
+    fun updateStopPercent(percent: Float) {
+        _uiState.update { it.copy(stopPercent = percent) }
+    }
+    
+    fun updateUseVWAPFilter(enabled: Boolean) {
+        _uiState.update { it.copy(useVWAPFilter = enabled) }
     }
     
     fun suggestTimeWindows() {
@@ -163,6 +218,14 @@ class SettingsViewModel(
                 preferencesManager.saveApiSecret(currentState.apiSecret)
                 preferencesManager.saveBuyWindowStart(currentState.buyWindowStart)
                 preferencesManager.saveBuyWindowEnd(currentState.buyWindowEnd)
+                preferencesManager.saveSellWindowStart(currentState.sellWindowStart)
+                preferencesManager.saveSellWindowEnd(currentState.sellWindowEnd)
+                preferencesManager.saveNotificationsEnabled(currentState.notificationsEnabled)
+                preferencesManager.saveAutoModeEnabled(currentState.autoModeEnabled)
+                preferencesManager.saveSellByTime(currentState.sellByTime)
+                preferencesManager.saveTargetPercent(currentState.targetPercent)
+                preferencesManager.saveStopPercent(currentState.stopPercent)
+                preferencesManager.saveUseVWAPFilter(currentState.useVWAPFilter)
                 preferencesManager.saveSellWindowStart(currentState.sellWindowStart)
                 preferencesManager.saveSellWindowEnd(currentState.sellWindowEnd)
                 preferencesManager.saveNotificationsEnabled(currentState.notificationsEnabled)

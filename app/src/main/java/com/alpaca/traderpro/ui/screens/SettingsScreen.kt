@@ -31,7 +31,14 @@ fun SettingsScreen(
     onSellWindowEndChange: (String) -> Unit,
     onNotificationsEnabledChange: (Boolean) -> Unit,
     onSuggestWindows: () -> Unit,
-    onSaveSettings: () -> Unit
+    onSaveSettings: () -> Unit,
+    onAutoModeEnabledChange: (Boolean) -> Unit,
+    onSellByTimeChange: (String) -> Unit,
+    onTargetPercentChange: (Float) -> Unit,
+    onStopPercentChange: (Float) -> Unit,
+    onUseVWAPFilterChange: (Boolean) -> Unit,
+    onConfirmAutoMode: () -> Unit,
+    onCancelAutoMode: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     
@@ -42,6 +49,145 @@ fun SettingsScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
+            // AUTO MODE TOGGLE - Prominent at the very top
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (uiState.autoModeEnabled) PrimaryGreen else PrimaryRed
+                ),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Rocket,
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp),
+                            tint = if (uiState.autoModeEnabled) LightGreen else LightRed
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Auto-Trade Engine",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = if (uiState.autoModeEnabled) LightGreen else LightRed
+                            )
+                            Text(
+                                text = if (uiState.autoModeEnabled) "ON" else "OFF",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = OnSurface
+                            )
+                        }
+                    }
+                    
+                    Switch(
+                        checked = uiState.autoModeEnabled,
+                        onCheckedChange = onAutoModeEnabledChange,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = LightGreen,
+                            checkedTrackColor = AccentGreen,
+                            uncheckedThumbColor = LightRed,
+                            uncheckedTrackColor = AccentRed
+                        )
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            // Auto-Mode Settings (visible when enabled)
+            AnimatedVisibility(
+                visible = uiState.autoModeEnabled,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = SurfaceDark
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Text(
+                            text = "Auto-Trade Settings",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = AccentBlue
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        OutlinedTextField(
+                            value = uiState.sellByTime,
+                            onValueChange = onSellByTimeChange,
+                            label = { Text("Force Exit Time (HH:mm)") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        OutlinedTextField(
+                            value = uiState.targetPercent.toString(),
+                            onValueChange = { 
+                                it.toFloatOrNull()?.let { value -> onTargetPercentChange(value) }
+                            },
+                            label = { Text("Target % (Profit)") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            suffix = { Text("%") }
+                        )
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        OutlinedTextField(
+                            value = uiState.stopPercent.toString(),
+                            onValueChange = { 
+                                it.toFloatOrNull()?.let { value -> onStopPercentChange(value) }
+                            },
+                            label = { Text("Stop % (Loss)") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            suffix = { Text("%") }
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Use VWAP Filter",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Switch(
+                                checked = uiState.useVWAPFilter,
+                                onCheckedChange = onUseVWAPFilterChange
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+            
             // API Credentials Section
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -360,6 +506,51 @@ fun SettingsScreen(
                     modifier = Modifier.size(200.dp)
                 )
             }
+        }
+        
+        // Auto-Mode Confirmation Dialog
+        if (uiState.showAutoModeConfirmation) {
+            AlertDialog(
+                onDismissRequest = onCancelAutoMode,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = AccentRed,
+                        modifier = Modifier.size(48.dp)
+                    )
+                },
+                title = { 
+                    Text(
+                        "Enable Auto-Trade?",
+                        style = MaterialTheme.typography.headlineSmall
+                    ) 
+                },
+                text = { 
+                    Text(
+                        "This will trade real money automatically. Are you sure?",
+                        style = MaterialTheme.typography.bodyLarge
+                    ) 
+                },
+                confirmButton = {
+                    Button(
+                        onClick = onConfirmAutoMode,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AccentGreen
+                        )
+                    ) {
+                        Icon(Icons.Default.Rocket, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Yes, Enable")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onCancelAutoMode) {
+                        Text("Cancel")
+                    }
+                },
+                containerColor = SurfaceDark
+            )
         }
     }
 }

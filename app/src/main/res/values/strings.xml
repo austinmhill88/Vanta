@@ -80,4 +80,26 @@
     <!-- Loading -->
     <string name="loading">Loading…</string>
     <string name="connecting">Connecting…</string>
+    
+    <!-- Auto-Mode -->
+    <string name="auto_trade_engine">Auto-Trade Engine</string>
+    <string name="auto_mode_off">OFF</string>
+    <string name="auto_mode_on">ON</string>
+    <string name="short_signal">SHORT SIGNAL – %1$s – %2$s</string>
+    <string name="entry_target_stop">Entry $%1$.2f → Target $%2$.2f → Stop $%3$.2f</string>
+    <string name="daily_summary_title">Today +%1$.2f%%</string>
+    <string name="auto_trade_log_tab">Auto-Trades</string>
+    <string name="sell_by_time">Sell By Time</string>
+    <string name="target_percent">Target %% (Profit)</string>
+    <string name="stop_percent">Stop %% (Loss)</string>
+    <string name="use_vwap_filter">Use VWAP Filter</string>
+    <string name="auto_mode_confirmation_title">Enable Auto-Trade?</string>
+    <string name="auto_mode_confirmation_message">This will trade real money automatically. Are you sure?</string>
+    <string name="win_rate">Win Rate: %1$d%% (%2$d trades)</string>
+    <string name="exit_reason_target">Target Hit</string>
+    <string name="exit_reason_stop">Stopped Out</string>
+    <string name="exit_reason_force">Force Exit</string>
+    <string name="exit_reason_manual">Manual Exit</string>
+    <string name="recalculating_signals">Recalculating signals…</string>
+    <string name="max_trades_reached">Max 1 auto-trade per day reached</string>
 </resources>

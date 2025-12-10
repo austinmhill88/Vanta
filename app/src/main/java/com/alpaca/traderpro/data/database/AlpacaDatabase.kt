@@ -6,12 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [DailyLogEntity::class],
-    version = 1,
+    entities = [DailyLogEntity::class, AutoTradeLogEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AlpacaDatabase : RoomDatabase() {
     abstract fun dailyLogDao(): DailyLogDao
+    abstract fun autoTradeLogDao(): AutoTradeLogDao
     
     companion object {
         @Volatile
@@ -23,7 +24,9 @@ abstract class AlpacaDatabase : RoomDatabase() {
                     context.applicationContext,
                     AlpacaDatabase::class.java,
                     "alpaca_trader_database"
-                ).build()
+                )
+                .fallbackToDestructiveMigration()
+                .build()
                 INSTANCE = instance
                 instance
             }

@@ -88,3 +88,60 @@ data class TradeUpdate(
     @SerializedName("t")
     val timestamp: String
 )
+
+data class Candle(
+    val open: Double,
+    val high: Double,
+    val low: Double,
+    val close: Double,
+    val volume: Long,
+    val timestamp: Long
+)
+
+data class AutoTradeSignal(
+    val symbol: String,
+    val signalTime: String,
+    val entryPrice: Double,
+    val targetPrice: Double,
+    val stopPrice: Double,
+    val signalType: String = "SHORT"
+)
+
+data class LiveTrade(
+    val symbol: String,
+    val entryPrice: Double,
+    val targetPrice: Double,
+    val stopPrice: Double,
+    val quantity: Int,
+    val entryTime: Long,
+    val isAutoTrade: Boolean = false
+)
+
+data class BracketOrderRequest(
+    @SerializedName("symbol")
+    val symbol: String,
+    @SerializedName("qty")
+    val qty: String,
+    @SerializedName("side")
+    val side: String,
+    @SerializedName("type")
+    val type: String,
+    @SerializedName("time_in_force")
+    val timeInForce: String,
+    @SerializedName("order_class")
+    val orderClass: String = "bracket",
+    @SerializedName("take_profit")
+    val takeProfit: TakeProfitLeg,
+    @SerializedName("stop_loss")
+    val stopLoss: StopLossLeg
+)
+
+data class TakeProfitLeg(
+    @SerializedName("limit_price")
+    val limitPrice: String
+)
+
+data class StopLossLeg(
+    @SerializedName("stop_price")
+    val stopPrice: String
+)
