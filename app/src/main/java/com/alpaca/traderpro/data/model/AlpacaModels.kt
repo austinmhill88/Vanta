@@ -57,7 +57,11 @@ data class OrderRequest(
     @SerializedName("type")
     val type: String,
     @SerializedName("time_in_force")
-    val timeInForce: String
+    val timeInForce: String,
+    @SerializedName("limit_price")
+    val limitPrice: String? = null,
+    @SerializedName("stop_price")
+    val stopPrice: String? = null
 )
 
 data class WebSocketAuth(
