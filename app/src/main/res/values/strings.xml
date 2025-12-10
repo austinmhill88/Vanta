@@ -30,8 +30,8 @@
     <!-- Trade Confirmations -->
     <string name="confirm_buy">Confirm Buy</string>
     <string name="confirm_sell">Confirm Sell</string>
-    <string name="confirm_buy_message">Buy %s shares of %s at 2x leverage?</string>
-    <string name="confirm_sell_message">Sell all %s shares of %s?</string>
+    <string name="confirm_buy_message" formatted="false">Buy %s shares of %s at 2x leverage?</string>
+    <string name="confirm_sell_message" formatted="false">Sell all %s shares of %s?</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     
@@ -46,9 +46,9 @@
     <string name="search_logs">Search logs…</string>
     <string name="filter_by_date">Filter by date</string>
     <string name="no_logs">No trading logs yet</string>
-    <string name="high_price">High: $%s at %s</string>
-    <string name="low_price">Low: $%s at %s</string>
-    <string name="difference">Diff: $%s (%s%%)</string>
+    <string name="high_price" formatted="false">High: $%s at %s</string>
+    <string name="low_price" formatted="false">Low: $%s at %s</string>
+    <string name="difference" formatted="false">Diff: $%s (%s%%)</string>
     
     <!-- Settings Screen -->
     <string name="api_credentials">API Credentials</string>
