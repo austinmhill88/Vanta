@@ -80,6 +80,7 @@ fun AppNavigation(
                 NavigationBar {
                     val items = listOf(
                         BottomNavItem("Home", Screen.Home.route, Icons.Default.Home),
+                        BottomNavItem("Portfolio", Screen.Portfolio.route, Icons.Default.AccountBalance),
                         BottomNavItem("Logs", Screen.Logs.route, Icons.Default.Assessment),
                         BottomNavItem("Settings", Screen.Settings.route, Icons.Default.Settings)
                     )
@@ -158,6 +159,33 @@ fun AppNavigation(
                     onOrderTypeChange = viewModel::updateOrderType,
                     onLimitPriceChange = viewModel::updateLimitPrice,
                     onStopPriceChange = viewModel::updateStopPrice
+                )
+            }
+            
+            composable(Screen.Portfolio.route) {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val app = context.applicationContext as AlpacaTraderApp
+                
+                val apiKey = securePreferencesManager.getApiKey() ?: ""
+                val apiSecret = securePreferencesManager.getApiSecret() ?: ""
+                
+                val apiService = createApiService(apiKey, apiSecret)
+                val alpacaRepository = AlpacaRepository(apiService)
+                
+                val viewModel: com.alpaca.traderpro.domain.PortfolioViewModel = viewModel(
+                    factory = PortfolioViewModelFactory(alpacaRepository)
+                )
+                
+                val uiState by viewModel.uiState.collectAsState()
+                
+                com.alpaca.traderpro.ui.screens.PortfolioScreen(
+                    uiState = uiState,
+                    onRefresh = viewModel::refresh,
+                    onPositionClick = { symbol ->
+                        // Navigate to home screen with this symbol
+                        navController.navigate(Screen.Home.route)
+                    },
+                    onClosePosition = viewModel::closePosition
                 )
             }
             
@@ -252,6 +280,18 @@ class HomeViewModelFactory(
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return HomeViewModel(alpacaRepository, logsRepository, securePreferencesManager) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+class PortfolioViewModelFactory(
+    private val alpacaRepository: AlpacaRepository
+) : androidx.lifecycle.ViewModelProvider.Factory {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(com.alpaca.traderpro.domain.PortfolioViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return com.alpaca.traderpro.domain.PortfolioViewModel(alpacaRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
