@@ -70,15 +70,181 @@ fun HomeScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Symbol Input
-            OutlinedTextField(
-                value = uiState.symbol,
-                onValueChange = onSymbolChange,
-                label = { Text("Symbol") },
+            // Symbol Input with Search Button
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp)
-            )
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = uiState.symbol,
+                    onValueChange = onSymbolChange,
+                    label = { Text("Symbol") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        imeAction = androidx.compose.ui.text.input.ImeAction.Search,
+                        capitalization = androidx.compose.ui.text.input.KeyboardCapitalization.Characters
+                    ),
+                    keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                        onSearch = {
+                            onRefresh()
+                        }
+                    )
+                )
+                
+                IconButton(
+                    onClick = onRefresh,
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search Symbol",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Portfolio Overview Card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = SurfaceDark
+                ),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Portfolio Overview",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = OnSurfaceVariant
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "Portfolio Value",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = OnSurfaceVariant
+                            )
+                            Text(
+                                text = currencyFormatter.format(uiState.portfolioValue),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = LightGreen
+                            )
+                        }
+                        
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = "Cash Available",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = OnSurfaceVariant
+                            )
+                            Text(
+                                text = currencyFormatter.format(uiState.cash),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "Day's P/L",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = OnSurfaceVariant
+                            )
+                            Text(
+                                text = currencyFormatter.format(uiState.dayProfitLoss),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = if (uiState.dayProfitLoss >= 0) LightGreen else LightRed
+                            )
+                        }
+                        
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = "Buying Power",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = OnSurfaceVariant
+                            )
+                            Text(
+                                text = currencyFormatter.format(uiState.buyingPower),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                    
+                    // Positions Summary
+                    if (uiState.positions.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "Open Positions (${uiState.positions.size})",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = OnSurfaceVariant
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        uiState.positions.take(3).forEach { position ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = position.symbol,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                
+                                Row {
+                                    Text(
+                                        text = "${position.qty} @ ${currencyFormatter.format(position.avgEntryPrice.toDoubleOrNull() ?: 0.0)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = OnSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = currencyFormatter.format(position.unrealizedPl.toDoubleOrNull() ?: 0.0),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = if ((position.unrealizedPl.toDoubleOrNull() ?: 0.0) >= 0) LightGreen else LightRed
+                                    )
+                                }
+                            }
+                        }
+                        
+                        if (uiState.positions.size > 3) {
+                            Text(
+                                text = "+ ${uiState.positions.size - 3} more",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = OnSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
             
             Spacer(modifier = Modifier.height(24.dp))
             

@@ -30,6 +30,13 @@ data class HomeUiState(
     val tradeSuccess: Boolean = false,
     val showCelebration: Boolean = false,
     val celebrationType: CelebrationType = CelebrationType.NONE,
+    // Portfolio Data
+    val portfolioValue: Double = 0.0,
+    val cash: Double = 0.0,
+    val equity: Double = 0.0,
+    val dayProfitLoss: Double = 0.0,
+    val dayProfitLossPercent: Double = 0.0,
+    val positions: List<com.alpaca.traderpro.data.model.Position> = emptyList(),
     // Auto-Mode
     val autoModeEnabled: Boolean = false,
     val currentSignal: com.alpaca.traderpro.data.model.AutoTradeSignal? = null,
@@ -81,15 +88,33 @@ class HomeViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             
+            // Load account data
             alpacaRepository.getAccount().fold(
                 onSuccess = { account ->
+                    val portfolioValue = account.portfolioValue.toDoubleOrNull() ?: 0.0
+                    val equity = account.equity.toDoubleOrNull() ?: 0.0
+                    val cash = account.cash.toDoubleOrNull() ?: 0.0
+                    val buyingPower = account.buyingPower.toDoubleOrNull() ?: 0.0
+                    
+                    // Calculate day's P/L (simplified - in real app would need yesterday's value)
+                    val dayPL = equity - cash
+                    val dayPLPercent = if (equity > 0) (dayPL / equity) * 100 else 0.0
+                    
                     _uiState.update { 
                         it.copy(
-                            buyingPower = account.buyingPower.toDoubleOrNull() ?: 0.0,
+                            buyingPower = buyingPower,
+                            portfolioValue = portfolioValue,
+                            cash = cash,
+                            equity = equity,
+                            dayProfitLoss = dayPL,
+                            dayProfitLossPercent = dayPLPercent,
                             isLoading = false,
                             errorMessage = null
                         )
                     }
+                    
+                    // Load all positions
+                    loadPositions()
                 },
                 onFailure = { exception ->
                     _uiState.update { 
@@ -97,6 +122,24 @@ class HomeViewModel(
                             isLoading = false,
                             errorMessage = exception.message
                         )
+                    }
+                }
+            )
+        }
+    }
+    
+    private fun loadPositions() {
+        viewModelScope.launch {
+            alpacaRepository.getAllPositions().fold(
+                onSuccess = { positions ->
+                    _uiState.update { 
+                        it.copy(positions = positions)
+                    }
+                },
+                onFailure = { exception ->
+                    // Silently fail for positions - not critical
+                    _uiState.update { 
+                        it.copy(positions = emptyList())
                     }
                 }
             )

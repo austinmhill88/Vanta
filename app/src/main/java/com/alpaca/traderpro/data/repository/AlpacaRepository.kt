@@ -25,6 +25,19 @@ class AlpacaRepository(
         }
     }
     
+    suspend fun getAllPositions(): Result<List<Position>> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.getAllPositions()
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Failed to get positions: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     suspend fun getPosition(symbol: String): Result<Position> = withContext(Dispatchers.IO) {
         try {
             val response = apiService.getPosition(symbol)
